@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bsip_postgres
+    environment:
+      POSTGRES_USER: bsip
+      POSTGRES_PASSWORD: bsip_secret
+      POSTGRES_DB: battery_swapping
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./data/sql/materialized_views.sql:/docker-entrypoint-initdb.d/02_views.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bsip -d battery_swapping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: bsip_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://bsip:bsip_secret@postgres:5432/battery_swapping
+      SYNC_DATABASE_URL: postgresql+psycopg2://bsip:bsip_secret@postgres:5432/battery_swapping
+      SECRET_KEY: dev-secret-key-change-in-prod
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 480
+      ENVIRONMENT: development
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: bsip_frontend
+    depends_on:
+      - backend
+    environment:
+      API_BASE_URL: http://backend:8000
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    command: streamlit run frontend/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+
+volumes:
+  postgres_data:

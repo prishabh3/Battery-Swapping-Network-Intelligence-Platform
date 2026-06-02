@@ -1,0 +1,147 @@
+name: CI — Battery Swapping Intelligence Platform
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+  DATABASE_URL: "postgresql+asyncpg://bsip:bsip_secret@localhost:5432/battery_swapping"
+  SYNC_DATABASE_URL: "postgresql+psycopg2://bsip:bsip_secret@localhost:5432/battery_swapping"
+  SECRET_KEY: "ci-test-secret-key-32-characters!!"
+  ALGORITHM: "HS256"
+
+jobs:
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dev dependencies
+        run: |
+          pip install ruff mypy
+
+      - name: Run ruff linter
+        run: ruff check . --select E,W,F --ignore E501
+
+      - name: Run mypy type check
+        run: mypy backend/ analytics/ --ignore-missing-imports --no-strict-optional
+        continue-on-error: true   # Non-blocking for now
+
+  unit-tests:
+    name: Unit & Analytics Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/ tests/analytics/ -v \
+            --cov=backend --cov=analytics \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=75
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: coverage.xml
+          fail_ci_if_error: false
+
+  integration-tests:
+    name: Integration Tests (Postgres)
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: bsip
+          POSTGRES_PASSWORD: bsip_secret
+          POSTGRES_DB: battery_swapping
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Apply database schema
+        run: |
+          psql "${{ env.SYNC_DATABASE_URL }}" -f data/sql/schema.sql
+        env:
+          SYNC_DATABASE_URL: postgresql://bsip:bsip_secret@localhost:5432/battery_swapping
+
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/ -v --timeout=60
+        env:
+          SYNC_DATABASE_URL: postgresql+psycopg2://bsip:bsip_secret@localhost:5432/battery_swapping
+          DATABASE_URL: postgresql+asyncpg://bsip:bsip_secret@localhost:5432/battery_swapping
+
+  docker-build:
+    name: Docker Build Validation
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -f Dockerfile.backend -t bsip-backend:ci .
+
+      - name: Build frontend image
+        run: docker build -f Dockerfile.frontend -t bsip-frontend:ci .
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install bandit
+        run: pip install bandit
+
+      - name: Run security scan
+        run: |
+          bandit -r backend/ analytics/ data/ \
+            -ll --exclude tests/ \
+            -f txt || true

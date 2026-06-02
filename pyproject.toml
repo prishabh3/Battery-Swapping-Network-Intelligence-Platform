@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "battery-swapping-intelligence-platform"
+version = "1.0.0"
+description = "Enterprise analytics platform for EV battery-swapping network operations"
+authors = [{ name = "P Rishabh" }]
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--cov=backend --cov=analytics --cov-report=term-missing --cov-report=html"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true

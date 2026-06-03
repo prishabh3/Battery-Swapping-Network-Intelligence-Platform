@@ -14,22 +14,23 @@ settings = get_settings()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Demo users — in production these live in the DB
+# Hashes pre-computed to avoid bcrypt calls at import time
 DEMO_USERS = {
     "chairman": {
         "username": "chairman",
-        "hashed_password": pwd_context.hash("sunmobility2024"),
+        "hashed_password": "$2b$12$dhZrkpLSobpfsvU1w0AAne1qlCH6hQA.q2h8688hfAGW7lwneRyyO",
         "role": "executive",
         "full_name": "Chairman's Office",
     },
     "analyst": {
         "username": "analyst",
-        "hashed_password": pwd_context.hash("analyst2024"),
+        "hashed_password": "$2b$12$JLjLN4FHz877kUo0h9FSL.fEGvqnKnMA2QZ1Q7heNo/u6o9p9Ue92",
         "role": "analyst",
         "full_name": "Product Analytics",
     },
     "ops": {
         "username": "ops",
-        "hashed_password": pwd_context.hash("ops2024"),
+        "hashed_password": "$2b$12$jpoDIA80jywpJiG8lp4CkuZiHh7sY1Jq4FVTeK288JY2y3H/JpNua",
         "role": "operations",
         "full_name": "Operations Strategy",
     },

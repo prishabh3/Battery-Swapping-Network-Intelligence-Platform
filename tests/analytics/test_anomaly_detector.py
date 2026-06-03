@@ -1,9 +1,7 @@
-import pytest
 import numpy as np
 import pandas as pd
 from analytics.anomaly_detection.anomaly_detector import (
-    BatteryAnomalyDetector, SwapPatternAnomalyDetector,
-    StationDemandAnomalyDetector, AnomalyDetectionPipeline,
+    BatteryAnomalyDetector, StationDemandAnomalyDetector, AnomalyDetectionPipeline,
 )
 
 

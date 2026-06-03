@@ -6,9 +6,8 @@ import io
 import logging
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
-import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -34,8 +33,8 @@ class ExcelReportGenerator:
                 "bold": True, "bg_color": "#1a1f36", "font_color": "white",
                 "border": 1, "align": "center", "valign": "vcenter",
             })
-            currency_fmt = wb.add_format({"num_format": "₹#,##0", "border": 1})
-            pct_fmt = wb.add_format({"num_format": "0.0%", "border": 1})
+            _currency_fmt = wb.add_format({"num_format": "₹#,##0", "border": 1})
+            _pct_fmt = wb.add_format({"num_format": "0.0%", "border": 1})
             cell_fmt = wb.add_format({"border": 1})
 
             # ── Sheet 1: Network KPIs ──────────────────────────

@@ -1,7 +1,6 @@
-from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from backend.api.dependencies import get_battery_service, CurrentUser
+from backend.api.dependencies import get_battery_service
 from backend.application.services.battery_service import BatteryService
 from backend.application.dtos.battery_dto import BatteryResponse, BatteryHealthReport, BatteryListResponse
 

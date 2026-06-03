@@ -9,7 +9,6 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-import io
 import numpy as np
 import pandas as pd
 import plotly.express as px

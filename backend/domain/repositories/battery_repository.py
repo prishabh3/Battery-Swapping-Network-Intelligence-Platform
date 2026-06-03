@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Sequence
-from uuid import UUID
 
 from backend.domain.entities.battery import Battery, BatteryStatus, ReplacementRisk
 

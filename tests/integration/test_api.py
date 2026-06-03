@@ -4,7 +4,6 @@ These tests run against an in-memory SQLite or mock layer.
 """
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from backend.api.main import app
 

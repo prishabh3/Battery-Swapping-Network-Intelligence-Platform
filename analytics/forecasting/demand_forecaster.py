@@ -13,7 +13,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from sklearn.preprocessing import LabelEncoder
 
 warnings.filterwarnings("ignore")
 logger = logging.getLogger(__name__)
@@ -24,7 +23,6 @@ try:
 except ImportError:
     XGB_AVAILABLE = False
     logger.warning("XGBoost not available — falling back to gradient boosting")
-    from sklearn.ensemble import GradientBoostingRegressor
 
 
 CITY_DEMAND_MULTIPLIERS = {

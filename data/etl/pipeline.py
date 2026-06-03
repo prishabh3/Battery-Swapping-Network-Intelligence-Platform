@@ -6,11 +6,10 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-import numpy as np
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 
 logger = logging.getLogger(__name__)
 

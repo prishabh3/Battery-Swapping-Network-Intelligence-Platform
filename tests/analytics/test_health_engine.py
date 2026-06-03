@@ -1,4 +1,3 @@
-import pytest
 from datetime import date, timedelta
 
 from analytics.battery_health.health_engine import (

@@ -2,7 +2,7 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import Optional, Sequence
 
-from backend.domain.entities.battery import Battery, BatteryStatus, ReplacementRisk
+from backend.domain.entities.battery import Battery, ReplacementRisk
 from backend.domain.repositories.battery_repository import BatteryRepository
 from backend.application.dtos.battery_dto import BatteryHealthReport
 
@@ -35,7 +35,6 @@ class BatteryService:
         if not battery:
             return None
 
-        nominal_cycles = 2000.0
         degradation_rate = round((1.0 - battery.current_health) / max(battery.cycle_count, 1) * 100, 4)
         remaining_soh = max(0.0, battery.current_health - 0.60)
         estimated_remaining_cycles = int(remaining_soh / max(degradation_rate / 100, 1e-6))

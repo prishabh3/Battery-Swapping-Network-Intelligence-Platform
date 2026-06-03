@@ -1,4 +1,3 @@
-import pytest
 from datetime import date, timedelta
 
 from backend.domain.entities.battery import Battery, BatteryStatus, ChemistryType, ReplacementRisk

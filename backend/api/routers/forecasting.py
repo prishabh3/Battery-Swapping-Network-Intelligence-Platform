@@ -1,6 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional
 import sys
 import os
 

@@ -2,7 +2,6 @@
 Synthetic data generator for the Battery Swapping Intelligence Platform.
 Generates realistic datasets reflecting India-wide battery-swapping operations.
 """
-import random
 import uuid
 import logging
 import math
@@ -159,17 +158,27 @@ def generate_batteries(n_batteries: int = 5000, stations_df: Optional[pd.DataFra
 
 def _compute_risk(soh: float, cycles: int, thermal: float, age_days: int) -> str:
     score = 0.0
-    if soh < 0.70: score += 40
-    elif soh < 0.80: score += 20
-    if cycles > 1500: score += 30
-    elif cycles > 1000: score += 15
-    if thermal > 0.7: score += 20
-    elif thermal > 0.4: score += 10
-    if age_days > 1460: score += 10
+    if soh < 0.70:
+        score += 40
+    elif soh < 0.80:
+        score += 20
+    if cycles > 1500:
+        score += 30
+    elif cycles > 1000:
+        score += 15
+    if thermal > 0.7:
+        score += 20
+    elif thermal > 0.4:
+        score += 10
+    if age_days > 1460:
+        score += 10
 
-    if score >= 70: return "critical"
-    if score >= 40: return "high"
-    if score >= 20: return "moderate"
+    if score >= 70:
+        return "critical"
+    if score >= 40:
+        return "high"
+    if score >= 20:
+        return "moderate"
     return "low"
 
 
@@ -252,11 +261,11 @@ def generate_swap_events(
 
         station_id = rng.choice(operational_stations)
         city = stations_df[stations_df["station_id"] == station_id]["city"].values[0]
-        city_multiplier = CITY_DEMAND_MULTIPLIERS.get(city, 1.0)
+        _city_multiplier = CITY_DEMAND_MULTIPLIERS.get(city, 1.0)
 
         # seasonal demand: higher in summer (May-Aug), lower in winter (Dec-Jan)
         month = swap_date.month
-        seasonal = 1.0 + 0.2 * math.sin(math.pi * (month - 1) / 6)
+        _seasonal = 1.0 + 0.2 * math.sin(math.pi * (month - 1) / 6)
 
         battery_in = rng.choice(active_batteries)
         battery_out = rng.choice(active_batteries)

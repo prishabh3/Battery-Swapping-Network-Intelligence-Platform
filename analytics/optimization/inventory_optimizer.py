@@ -7,11 +7,8 @@ import logging
 import math
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Optional
 
-import numpy as np
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -338,7 +335,7 @@ class ScenarioSimulator:
             },
             "recommendations": [
                 f"Accelerate procurement of {new_batteries_needed} batteries immediately.",
-                f"Re-run inventory optimization to redistribute surplus from low-demand stations.",
+                "Re-run inventory optimization to redistribute surplus from low-demand stations.",
                 f"{at_risk_stations} stations at risk of inventory shortfall — prioritize replenishment.",
                 "Enable dynamic pricing at peak-demand stations to manage demand.",
             ],
@@ -371,7 +368,7 @@ class ScenarioSimulator:
             },
             "recommendations": [
                 f"Replace {retiring} batteries over 3 months to avoid service disruption.",
-                f"Prioritize replacement at high-demand stations first.",
+                "Prioritize replacement at high-demand stations first.",
                 "Use retiring batteries for off-grid energy storage monetization.",
                 "Negotiate bulk procurement discount (target >8%) on replacement order.",
             ],

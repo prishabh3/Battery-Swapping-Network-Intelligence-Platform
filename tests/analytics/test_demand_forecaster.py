@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 
 from analytics.forecasting.demand_forecaster import FeatureEngineering, DemandForecaster
@@ -11,7 +10,7 @@ class TestFeatureEngineering:
 
     def test_build_features_returns_dataframe(self):
         import pandas as pd
-        from datetime import date, timedelta
+        from datetime import date
 
         dates = pd.date_range(end=date.today(), periods=100, freq="D")
         df = pd.DataFrame({
@@ -26,7 +25,7 @@ class TestFeatureEngineering:
 
     def test_features_no_nan(self):
         import pandas as pd
-        from datetime import date, timedelta
+        from datetime import date
 
         dates = pd.date_range(end=date.today(), periods=90, freq="D")
         df = pd.DataFrame({

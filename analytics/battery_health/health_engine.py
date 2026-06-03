@@ -6,7 +6,7 @@ replacement risk scores, and generates lifecycle reports.
 import logging
 import math
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Optional
 
 import numpy as np
@@ -102,7 +102,7 @@ class DegradationTrendAnalyzer:
         # Linear regression on degradation
         coeffs = np.polyfit(cycles, sohs, deg=1)
         slope = coeffs[0]  # SOH change per cycle
-        intercept = coeffs[1]
+        _intercept = coeffs[1]
 
         # R² for fit quality
         y_pred = np.polyval(coeffs, cycles)

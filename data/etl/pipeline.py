@@ -4,7 +4,7 @@ Automated ETL pipeline: Raw data → Validation → Cleaning → Feature Enginee
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +22,7 @@ class PipelineMetrics:
     rows_dropped: int = 0
     errors: list[str] = field(default_factory=list)
     duration_seconds: float = 0.0
-    started_at: datetime = field(default_factory=datetime.utcnow)
+    started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def drop_rate(self) -> float:
@@ -264,6 +264,9 @@ class ETLPipeline:
                 for key, (table, cols) in table_map.items():
                     if key not in datasets:
                         continue
+                    missing = [c for c in cols if c not in datasets[key].columns]
+                    if missing:
+                        logger.warning("[ETL] Table %s missing columns: %s", table, missing)
                     df = datasets[key][[c for c in cols if c in datasets[key].columns]]
                     df.to_sql(table, conn, if_exists="append", index=False, method="multi",
                               chunksize=5000)

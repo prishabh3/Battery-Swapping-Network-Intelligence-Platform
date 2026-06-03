@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional, Sequence
 
 from backend.domain.entities.battery import Battery, ReplacementRisk
@@ -88,6 +88,6 @@ class BatteryService:
         battery.cycle_count = new_cycle_count
         battery.thermal_stress_score = thermal_score
         battery.replacement_risk = battery.compute_replacement_risk()
-        battery.updated_at = datetime.utcnow()
+        battery.updated_at = datetime.now(timezone.utc)
 
         return await self._repo.update(battery)

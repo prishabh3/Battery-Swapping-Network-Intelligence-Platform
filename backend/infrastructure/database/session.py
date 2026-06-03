@@ -58,10 +58,9 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             await session.close()
 
 
-def get_sync_db() -> Session:
+def get_sync_db():
     db = SyncSessionLocal()
     try:
-        return db
-    except Exception:
+        yield db
+    finally:
         db.close()
-        raise

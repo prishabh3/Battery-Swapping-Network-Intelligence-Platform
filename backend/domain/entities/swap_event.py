@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 
@@ -26,7 +26,7 @@ class SwapEvent:
     soh_at_swap: float          # SOH of battery_out at time of swap
     is_anomalous: bool = False
     anomaly_score: float = 0.0
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def is_fast_swap(self) -> bool:

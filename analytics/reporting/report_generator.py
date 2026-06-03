@@ -42,7 +42,7 @@ class ExcelReportGenerator:
             ws.set_column("A:A", 35)
             ws.set_column("B:B", 20)
             ws.write(0, 0, "BSIP Executive Report", wb.add_format({"bold": True, "font_size": 14}))
-            ws.write(1, 0, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
+            ws.write(1, 0, f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
             ws.write(3, 0, "Metric", header_fmt)
             ws.write(3, 1, "Value", header_fmt)
             for i, (k, v) in enumerate(network_kpis.items(), start=4):

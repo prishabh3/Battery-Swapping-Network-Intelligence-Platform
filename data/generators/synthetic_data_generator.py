@@ -5,7 +5,7 @@ Generates realistic datasets reflecting India-wide battery-swapping operations.
 import uuid
 import logging
 import math
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -94,10 +94,10 @@ def generate_stations(n_stations: int = 120) -> pd.DataFrame:
                 ),
                 "operator_name": f"SUN Mobility Ops {city[:3].upper()}",
                 "pincode": fake.postcode(),
-                "created_at": datetime.utcnow() - timedelta(days=int(rng.integers(180, 730))),
-                "updated_at": datetime.utcnow(),
+                "created_at": datetime.now(timezone.utc) - timedelta(days=int(rng.integers(180, 730))),
+                "updated_at": datetime.now(timezone.utc),
                 "last_outage_at": (
-                    datetime.utcnow() - timedelta(days=int(rng.integers(1, 30)))
+                    datetime.now(timezone.utc) - timedelta(days=int(rng.integers(1, 30)))
                     if rng.random() < 0.15 else None
                 ),
             })
@@ -148,9 +148,9 @@ def generate_batteries(n_batteries: int = 5000, stations_df: Optional[pd.DataFra
             "replacement_risk": replacement_risk,
             "avg_temperature": round(avg_temp, 2),
             "peak_temperature": round(peak_temp, 2),
-            "last_swap_at": datetime.utcnow() - timedelta(hours=int(rng.integers(1, 72))),
+            "last_swap_at": datetime.now(timezone.utc) - timedelta(hours=int(rng.integers(1, 72))),
             "created_at": datetime.combine(mfg_date, datetime.min.time()),
-            "updated_at": datetime.utcnow(),
+            "updated_at": datetime.now(timezone.utc),
         })
 
     return pd.DataFrame(records)
@@ -207,8 +207,8 @@ def generate_vehicles(n_vehicles: int = 2500) -> pd.DataFrame:
             "total_swaps": total_swaps,
             "total_distance_km": round(total_swaps * rng.uniform(40, 120), 1),
             "avg_daily_swaps": avg_daily,
-            "last_swap_at": datetime.utcnow() - timedelta(hours=int(rng.integers(1, 168))),
-            "created_at": datetime.utcnow() - timedelta(days=created_days_ago),
+            "last_swap_at": datetime.now(timezone.utc) - timedelta(hours=int(rng.integers(1, 168))),
+            "created_at": datetime.now(timezone.utc) - timedelta(days=created_days_ago),
         })
 
     return pd.DataFrame(records)

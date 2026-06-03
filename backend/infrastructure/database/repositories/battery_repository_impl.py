@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Sequence
 
 from sqlalchemy import select, func
@@ -96,7 +96,7 @@ class SQLAlchemyBatteryRepository(BatteryRepository):
         model.avg_temperature = battery.avg_temperature
         model.peak_temperature = battery.peak_temperature
         model.last_swap_at = battery.last_swap_at
-        model.updated_at = datetime.utcnow()
+        model.updated_at = datetime.now(timezone.utc)
         await self._session.flush()
         return battery
 

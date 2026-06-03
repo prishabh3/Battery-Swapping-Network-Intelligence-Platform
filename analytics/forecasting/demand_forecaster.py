@@ -5,7 +5,7 @@ Forecasts daily and hourly swap demand with confidence intervals.
 import logging
 import os
 import warnings
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -241,7 +241,7 @@ class DemandForecaster:
         # Scale to network size (120 stations, 10 sampled)
         scale = 12
         return {
-            "forecast_generated_at": datetime.utcnow().isoformat(),
+            "forecast_generated_at": datetime.now(timezone.utc).isoformat(),
             "total_network_stations": 120,
             "network_daily_forecast": [
                 {

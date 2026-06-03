@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Boolean, Column, Date, DateTime, Enum as SAEnum, Float, ForeignKey,
     Integer, String, Text, Index, UniqueConstraint,
@@ -26,8 +26,8 @@ class BatteryModel(Base):
     avg_temperature = Column(Float, default=25.0)
     peak_temperature = Column(Float, default=35.0)
     last_swap_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
     station = relationship("StationModel", back_populates="batteries", foreign_keys=[current_station_id])
     swap_events_in = relationship("SwapEventModel", back_populates="battery_in", foreign_keys="SwapEventModel.battery_in_id")
@@ -54,8 +54,8 @@ class StationModel(Base):
     status = Column(SAEnum("operational", "degraded", "offline", "maintenance", name="station_status_enum"), nullable=False)
     operator_name = Column(String(200), nullable=False)
     pincode = Column(String(10), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     last_outage_at = Column(DateTime, nullable=True)
 
     batteries = relationship("BatteryModel", back_populates="station", foreign_keys="BatteryModel.current_station_id")
@@ -80,7 +80,7 @@ class VehicleModel(Base):
     total_distance_km = Column(Float, default=0.0)
     avg_daily_swaps = Column(Float, default=0.0)
     last_swap_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     swap_events = relationship("SwapEventModel", back_populates="vehicle")
 
@@ -101,7 +101,7 @@ class SwapEventModel(Base):
     soh_at_swap = Column(Float, nullable=False)
     is_anomalous = Column(Boolean, default=False)
     anomaly_score = Column(Float, default=0.0)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     station = relationship("StationModel", back_populates="swap_events")
     battery_in = relationship("BatteryModel", back_populates="swap_events_in", foreign_keys=[battery_in_id])
@@ -125,7 +125,7 @@ class DailyDemandForecastModel(Base):
     confidence_lower = Column(Float, nullable=False)
     confidence_upper = Column(Float, nullable=False)
     model_version = Column(String(50), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     __table_args__ = (
         UniqueConstraint("station_id", "forecast_date", "model_version", name="uq_forecast_station_date"),
@@ -141,7 +141,7 @@ class InventoryTransferModel(Base):
     quantity = Column(Integer, nullable=False)
     priority = Column(String(20), nullable=False)
     status = Column(String(20), default="pending")
-    recommended_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    recommended_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     executed_at = Column(DateTime, nullable=True)
     reason = Column(Text, nullable=True)
 
@@ -156,7 +156,7 @@ class AnomalyRecordModel(Base):
     severity = Column(String(20), nullable=False)
     score = Column(Float, nullable=False)
     description = Column(Text, nullable=False)
-    detected_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    detected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     resolved_at = Column(DateTime, nullable=True)
     is_resolved = Column(Boolean, default=False)
 

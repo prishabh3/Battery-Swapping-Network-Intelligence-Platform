@@ -5,7 +5,7 @@ unusual station demand, and inventory discrepancies.
 """
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 import uuid
 
@@ -98,7 +98,7 @@ class BatteryAnomalyDetector:
                     severity=severity,
                     score=round(norm_score, 4),
                     description=description,
-                    detected_at=datetime.utcnow(),
+                    detected_at=datetime.now(timezone.utc),
                 ))
 
         logger.info("Battery anomaly detection: %d anomalies found in %d batteries",
@@ -170,7 +170,7 @@ class SwapPatternAnomalyDetector:
                     severity=severity,
                     score=round(norm_score, 4),
                     description="Suspicious swap pattern: " + (", ".join(reasons) if reasons else "outlier"),
-                    detected_at=datetime.utcnow(),
+                    detected_at=datetime.now(timezone.utc),
                 ))
 
         return records
@@ -192,7 +192,7 @@ class StationDemandAnomalyDetector:
                     severity="warning",
                     score=0.85,
                     description=f"Station at {util * 100:.0f}% capacity — potential reporting error or outage.",
-                    detected_at=datetime.utcnow(),
+                    detected_at=datetime.now(timezone.utc),
                 ))
             elif util < 0.05 and row.get("status", "") == "operational":
                 records.append(AnomalyRecord(
@@ -203,7 +203,7 @@ class StationDemandAnomalyDetector:
                     severity="critical",
                     score=0.95,
                     description=f"Operational station critically low: only {util * 100:.0f}% inventory.",
-                    detected_at=datetime.utcnow(),
+                    detected_at=datetime.now(timezone.utc),
                 ))
         return records
 

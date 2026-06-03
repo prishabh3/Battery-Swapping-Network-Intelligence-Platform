@@ -4,7 +4,7 @@ Produces PDF and Excel reports for the Chairman's Office and Product Analytics t
 """
 import io
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Optional
 
